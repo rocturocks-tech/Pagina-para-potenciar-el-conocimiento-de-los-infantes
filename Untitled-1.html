@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aprendelandia – Juego y Aprendo</title>
+  <meta name="description" content="Página educativa para potenciar el conocimiento de niños de primaria, con juegos, ejercicios y recursos." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🎒</text></svg>">
+  <style>
+    :root {
+      --bg: #f7f9ff;
+      --card: #ffffff;
+      --ink: #1f2937; /* gris 800 */
+      --muted: #6b7280; /* gris 500 */
+      --brand: #2563eb; /* azul */
+      --brand-2: #16a34a; /* verde */
+      --accent: #f59e0b; /* ámbar */
+      --danger: #dc2626; /* rojo */
+      --radius: 18px;
+      --shadow: 0 10px 18px rgba(0,0,0,.06), 0 2px 4px rgba(0,0,0,.06);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b1220;
+        --card: #121a2b;
+        --ink: #e5e7eb;
+        --muted: #9ca3af;
+        --brand: #60a5fa;
+        --brand-2: #34d399;
+        --accent: #fbbf24;
+      }
+      body:not(.force-light) { color-scheme: dark; }
+    }
+    body.force-light {
+      color-scheme: light;
+      --bg: #f7f9ff;
+      --card: #ffffff;
+      --ink: #1f2937;
+      --muted: #6b7280;
+      --brand: #2563eb;
+      --brand-2: #16a34a;
+      --accent: #f59e0b;
+    }
+    body.force-dark {
+      color-scheme: dark;
+      --bg: #0b1220;
+      --card: #121a2b;
+      --ink: #e5e7eb;
+      --muted: #9ca3af;
+      --brand: #60a5fa;
+      --brand-2: #34d399;
+      --accent: #fbbf24;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+    a { color: var(--brand); text-decoration: none; }
+    a:focus { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 8px; }
+    .container { max-width: 1100px; margin-inline: auto; padding: 24px; }
+
+    /* Header */
+    header { position: sticky; top: 0; background: color-mix(in srgb, var(--card), transparent 8%); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(0,0,0,.05); z-index: 20; }
+    .nav { display: flex; align-items: center; gap: 16px; justify-content: space-between; }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.2rem; }
+    .brand .logo { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; background: linear-gradient(135deg, var(--brand), var(--accent)); color: #fff; box-shadow: var(--shadow); }
+    nav ul { list-style: none; display: flex; gap: 12px; margin: 0; padding: 0; flex-wrap: wrap; }
+    nav a { display: inline-block; padding: 10px 14px; border-radius: 12px; }
+    nav a:hover { background: rgba(37,99,235,.12); }
+    .controls { display: flex; gap: 8px; }
+    .btn { padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(0,0,0,.08); background: var(--card); box-shadow: var(--shadow); cursor: pointer; }
+    .btn[aria-pressed="true"] { outline: 3px solid var(--accent); }
+
+    /* Hero */
+    .hero { display: grid; grid-template-columns: 1.2fr .8fr; gap: 24px; align-items: center; }
+    .hero .card { background: var(--card); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .chip { background: rgba(22,163,74,.12); color: #065f46; padding: 8px 12px; border-radius: 999px; font-size: .9rem; }
+    .cta { display: flex; gap: 12px; margin-top: 16px; }
+    .cta .btn.primary { background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: white; border: none; }
+
+    /* Sections */
+    section { scroll-margin-top: 90px; }
+    .section-title { display: flex; align-items: center; gap: 10px; font-size: 1.4rem; margin: 30px 0 14px; }
+    .grid { display: grid; gap: 16px; }
+    .grid.cards { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .card { background: var(--card); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); }
+    .card h3 { margin: 0 0 8px; }
+    .tag { display: inline-block; background: rgba(37,99,235,.1); padding: 6px 10px; border-radius: 999px; font-size: .8rem; margin-right: 6px; }
+
+    /* Tools */
+    .tool { display: grid; gap: 12px; }
+    label { font-weight: 600; }
+    input, select, button, textarea { font: inherit; }
+    input[type="number"], input[type="text"], select { width: 100%; padding: 10px 12px; border: 1px solid rgba(0,0,0,.12); border-radius: 12px; background: transparent; color: inherit; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .score { font-weight: 800; }
+
+    /* Quiz */
+    .quiz-q { margin: 8px 0 2px; }
+    .quiz-options { display: grid; gap: 8px; }
+    .quiz-options button { justify-content: flex-start; }
+    .feedback { min-height: 24px; }
+    .feedback[aria-live] { padding-top: 4px; }
+
+    /* Flashcards */
+    .flash { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .flash .card { min-height: 120px; display: grid; place-items: center; text-align: center; font-size: 1.1rem; cursor: pointer; border: 2px dashed rgba(0,0,0,.08); }
+
+    /* Memory game */
+    .board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .tile { aspect-ratio: 1/1; border-radius: 16px; display: grid; place-items: center; font-size: 1.6rem; background: linear-gradient(135deg, var(--brand), var(--accent)); color: transparent; position: relative; cursor: pointer; }
+    .tile::after { content: "?"; position: absolute; color: #fff; font-weight: 900; }
+    .tile.open { color: #111; background: var(--card); box-shadow: inset 0 0 0 2px rgba(0,0,0,.1); }
+    .tile.matched { background: var(--brand-2); color: #fff; }
+
+    /* Footer */
+    footer { margin-top: 34px; padding: 24px 0; border-top: 1px solid rgba(0,0,0,.08); color: var(--muted); }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; }
+    }
+
+    /* Print friendly */
+    @media print {
+      header, .controls, .cta, .board .tile::after { display: none !important; }
+      a[href]::after { content: " (" attr(href) ")"; }
+      .card { box-shadow: none; border: 1px solid #ddd; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#contenido" style="position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden">Saltar al contenido</a>
+  <header>
+    <div class="container nav" role="navigation" aria-label="Principal">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">🧠</div>
+        <span>Aprendelandia</span>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#inicio">Inicio</a></li>
+          <li><a href="#areas">Áreas</a></li>
+          <li><a href="#matematicas">Matemáticas</a></li>
+          <li><a href="#lengua">Lengua</a></li>
+          <li><a href="#ciencias">Ciencias</a></li>
+          <li><a href="#juegos">Juegos</a></li>
+          <li><a href="#recursos">Recursos</a></li>
+        </ul>
+      </nav>
+      <div class="controls">
+        <button class="btn" id="btnToggle" aria-pressed="false" title="Cambiar contraste">🌓 Contraste</button>
+        <button class="btn" id="btnFont" aria-pressed="false" title="Aumentar tamaño de letra">🔤 Texto</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="contenido" class="container">
+    <!-- Hero -->
+    <section id="inicio" class="hero" aria-labelledby="h-hero">
+      <div class="card">
+        <h1 id="h-hero">Aprende jugando 📚✨</h1>
+        <p>
+          Bienvenido/a a <strong>Aprendelandia</strong>, una página pensada para niñas y niños de primaria. Aquí encontrarás ejercicios, juegos y
+          recursos para practicar <em>matemáticas</em>, <em>lengua</em> y <em>ciencias</em> de forma divertida y segura.
+        </p>
+        <div class="chips" aria-label="Habilidades a reforzar">
+          <span class="chip">Cálculo mental</span>
+          <span class="chip">Comprensión lectora</span>
+          <span class="chip">Curiosidad científica</span>
+        </ ihtiyacı
+
+        <div class="cta">
+          <a class="btn primary" href="#areas">🔎 Explorar áreas</a>
+          <button class="btn" id="btnReset">🧹 Reiniciar progreso</button>
+        </div>
+      </div>
+      <div class="card" aria-live="polite">
+        <h2>Puntaje y progreso</h2>
+        <p>Tu puntaje total: <span class="score" id="score">0</span> ⭐</p>
+        <p>Actividades completadas: <span id="done">0</span>/5</p>
+        <div style="height:14px;background:rgba(0,0,0,.08);border-radius:999px;overflow:hidden">
+          <div id="bar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--brand),var(--brand-2));transition:width .4s"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Áreas -->
+    <section id="areas" aria-labelledby="h-areas">
+      <h2 class="section-title" id="h-areas">Áreas de aprendizaje</h2>
+      <div class="grid cards">
+        <article class="card" role="article">
+          <h3>➗ Matemáticas</h3>
+          <p>Multiplicaciones, tablas y cálculo mental.</p>
+          <a class="tag" href="#matematicas">Ir a la sección</a>
+        </article>
+        <article class="card" role="article">
+          <h3>🔤 Lengua</h3>
+          <p>Palabras, sílabas y comprensión.</p>
+          <a class="tag" href="#lengua">Ir a la sección</a>
+        </article>
+        <article class="card" role="article">
+          <h3>🧪 Ciencias</h3>
+          <p>Curiosidades y conceptos clave.</p>
+          <a class="tag" href="#ciencias">Ir a la sección</a>
+        </article>
+        <article class="card" role="article">
+          <h3>🎮 Juegos</h3>
+          <p>¡Memoria y preguntas rápidas!</p>
+          <a class="tag" href="#juegos">Ir a la sección</a>
+        </article>
+      </div>
+    </section>
+
+    <!-- Matemáticas -->
+    <section id="matematicas" aria-labelledby="h-mat">
+      <h2 class="section-title" id="h-mat">Matemáticas divertidas</h2>
+      <div class="grid cards">
+        <article class="card tool" aria-labelledby="h-tablas">
+          <h3 id="h-tablas">Tabla de multiplicar interactiva</h3>
+          <div class="actions">
+            <label for="nTabla">Elige un número:</label>
+            <select id="nTabla" aria-label="Selecciona el número de la tabla">
+              <option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+            </select>
+            <button class="btn" id="btnTabla">Mostrar</button>
+          </div>
+          <ol id="listaTabla" aria-live="polite"></ol>
+        </article>
+
+        <article class="card tool" aria-labelledby="h-rapidas">
+          <h3 id="h-rapidas">Operaciones rápidas</h3>
+          <div class="actions">
+            <label for="a">A</label>
+            <input id="a" type="number" inputmode="numeric" min="0" value="3">
+            <label for="b">B</label>
+            <input id="b" type="number" inputmode="numeric" min="0" value="4">
+          </div>
+          <div class="actions">
+            <button class="btn" data-op="+">➕ Sumar</button>
+            <button class="btn" data-op="-">➖ Restar</button>
+            <button class="btn" data-op="×">✖️ Multiplicar</button>
+            <button class="btn" data-op="÷">➗ Dividir</button>
+          </div>
+          <p class="feedback" id="res-op" aria-live="polite"></p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Lengua -->
+    <section id="lengua" aria-labelledby="h-len">
+      <h2 class="section-title" id="h-len">Lengua y palabras</h2>
+      <div class="grid cards">
+        <article class="card tool" aria-labelledby="h-sil">
+          <h3 id="h-sil">Separador de sílabas (simple)</h3>
+          <label for="palabra">Escribe una palabra:</label>
+          <input id="palabra" type="text" placeholder="ej. escuela">
+          <button class="btn" id="btnSil">Dividir</button>
+          <p class="feedback" id="outSil" aria-live="polite"></p>
+          <small style="color:var(--muted)">Nota: regla simple para niños (no cubre todos los casos).</small>
+        </article>
+
+        <article class="card tool" aria-labelledby="h-plural">
+          <h3 id="h-plural">Formar el plural</h3>
+          <label for="singular">Palabra en singular:</label>
+          <input id="singular" type="text" placeholder="gato">
+          <button class="btn" id="btnPlural">Obtener plural</button>
+          <p class="feedback" id="outPlural" aria-live="polite"></p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Ciencias -->
+    <section id="ciencias" aria-labelledby="h-cien">
+      <h2 class="section-title" id="h-cien">Ciencias para explorar</h2>
+      <div class="flash">
+        <div class="card" tabindex="0" role="button" aria-pressed="false" data-front="💧 Estado líquido" data-back="El agua líquida toma la forma del recipiente." aria-label="Tarjeta: Estado líquido">💧 Estado líquido</div>
+        <div class="card" tabindex="0" role="button" aria-pressed="false" data-front="❄️ Estado sólido" data-back="El hielo mantiene su forma." aria-label="Tarjeta: Estado sólido">❄️ Estado sólido</div>
+        <div class="card" tabindex="0" role="button" aria-pressed="false" data-front="💨 Estado gaseoso" data-back="El vapor se expande y no tiene forma fija." aria-label="Tarjeta: Estado gaseoso">💨 Estado gaseoso</div>
+        <div class="card" tabindex="0" role="button" aria-pressed="false" data-front="🌱 Fotosíntesis" data-back="Las plantas usan luz para producir alimento." aria-label="Tarjeta: Fotosíntesis">🌱 Fotosíntesis</div>
+      </div>
+    </section>
+
+    <!-- Juegos -->
+    <section id="juegos" aria-labelledby="h-juegos">
+      <h2 class="section-title" id="h-juegos">Juegos educativos</h2>
+      <div class="grid cards">
+        <article class="card tool" aria-labelledby="h-quiz">
+          <h3 id="h-quiz">Mini Quiz (5 preguntas)</h3>
+          <div id="quiz" role="group" aria-describedby="q-help"></div>
+          <p id="q-help" style="color:var(--muted)">Selecciona la respuesta correcta. Ganas 1 ⭐ por cada acierto.</p>
+          <p class="feedback" id="quizFeed" aria-live="polite"></p>
+        </article>
+
+        <article class="card tool" aria-labelledby="h-mem">
+          <h3 id="h-mem">Juego de memoria</h3>
+          <div class="board" id="board" aria-label="Tablero de memoria"></div>
+          <p class="feedback" id="memFeed" aria-live="polite"></p>
+          <div class="actions"><button class="btn" id="resetMem">Reiniciar tablero</button></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Recursos -->
+    <section id="recursos" aria-labelledby="h-rec">
+      <h2 class="section-title" id="h-rec">Recursos para clase y casa</h2>
+      <div class="grid cards">
+        <article class="card">
+          <h3>Consejos de estudio</h3>
+          <ul>
+            <li>Establece horarios cortos y descansa entre ellos.</li>
+            <li>Lee en voz alta para mejorar la comprensión.</li>
+            <li>Explica con tus palabras lo que aprendiste.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Reglas de convivencia digital</h3>
+          <ul>
+            <li>Respeta y ayuda a tus compañeros.</li>
+            <li>No compartas datos personales.</li>
+            <li>Pide ayuda a un adulto si ves algo raro.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      <p>© <span id="year">2025</span> Aprendelandia — Hecho con ❤️ para aprender jugando.</p>
+    </footer>
+  </main>
+
+  <script>
+    // ===== Utilidades de estado y progreso =====
+    const $ = (s, r = document) => r.querySelector(s);
+    const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+    const SCORE_KEY = 'aprendelandia_score';
+    const DONE_KEY = 'aprendelandia_done';
+    const PREF_KEY = 'aprendelandia_prefs';
+
+    const state = {
+      score: Number(localStorage.getItem(SCORE_KEY) || 0),
+      done: Number(localStorage.getItem(DONE_KEY) || 0),
+      prefs: JSON.parse(localStorage.getItem(PREF_KEY) || '{}')
+    };
+
+    function save() {
+      localStorage.setItem(SCORE_KEY, state.score);
+      localStorage.setItem(DONE_KEY, state.done);
+      localStorage.setItem(PREF_KEY, JSON.stringify(state.prefs));
+    }
+
+    function updateProgress() {
+      $('#score').textContent = state.score;
+      $('#done').textContent = state.done;
+      $('#bar').style.width = Math.min(100, (state.done / 5) * 100) + '%';
+    }
+
+    // ===== Preferencias de accesibilidad =====
+    const fontSizes = ['100%', '112%', '125%'];
+    $('#btnToggle').addEventListener('click', (e) => {
+      const pressed = e.currentTarget.getAttribute('aria-pressed') === 'true';
+      e.currentTarget.setAttribute('aria-pressed', String(!pressed));
+      document.body.classList.toggle('force-light', !pressed);
+      document.body.classList.toggle('force-dark', pressed);
+      state.prefs.darkMode = !pressed ? 'light' : 'dark';
+      save();
+    });
+
+    $('#btnFont').addEventListener('click', (e) => {
+      const currentSize = state.prefs.font || '100%';
+      const nextIndex = (ressize.indexOf(currentSize) + 1) % fontSizes.length;
+      const newSize = fontSizes[nextIndex];
+      document.body.style.fontSize = newSize;
+      state.prefs.font = newSize;
+      save();
+      e.currentTarget.setAttribute('aria-pressed', newSize !== '100%');
+    });
+
+    // Restaurar preferencias
+    if (state.prefs.darkMode) {
+      document.body.classList.toggle('force-light', state.prefs.darkMode === 'light');
+      document.body.classList.toggle('force-dark', state.prefs.darkMode === 'dark');
+      $('#btnToggle').setAttribute('aria-pressed', state.prefs.darkMode === 'dark');
+    }
+    if (state.prefs.font) {
+      document.body.style.fontSize = state.prefs.font;
+      $('#btnFont').setAttribute('aria-pressed', state.prefs.font !== '100%');
+    }
+
+    // ===== Hero =====
+    $('#year').textContent = new Date().getFullYear();
+    $('#btnReset').addEventListener('click', () => {
+      if (confirm('¿Seguro que quieres reiniciar tu progreso?')) {
+        state.score = 0;
+        state.done = 0;
+        save();
+        updateProgress();
+        $('#quizFeed').textContent = '';
+        initQuiz(true);
+        initMemory(true);
+        $('#listaTabla').innerHTML = '';
+        $('#res-op').textContent = '';
+        $('#outSil').textContent = '';
+        $('#outPlural').textContent = '';
+      }
+    });
+
+    // ===== Matemáticas: Tabla =====
+    $('#btnTabla').addEventListener('click', () => {
+      const n = Number($('#nTabla').value);
+      if (isNaN(n) || n < 2 || n > 10) {
+        $('#listaTabla').innerHTML = '<li>Por favor, selecciona un número válido (2-10).</li>';
+        return;
+      }
+      const ol = $('#listaTabla');
+      ol.innerHTML = '';
+      for (let i = 1; i <= 10; i++) {
+        const li = document.createElement('li');
+        li.textContent = `${n} × ${i} = ${n * i}`;
+        ol.appendChild(li);
+      }
+      tickDone();
+    });
+
+    // ===== Matemáticas: Operaciones rápidas =====
+    $$('#matematicas [data-op]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const a = Number($('#a').value || 0);
+        const b = Number($('#b').value || 0);
+        const op = btn.getAttribute('data-op');
+        let res;
+        if (op === '+') res = a + b;
+        else if (op === '-') res = a - b;
+        else if (op === '×') res = a * b;
+        else if (op === '÷') {
+          if (b === 0) {
+            $('#res-op').textContent = 'No se puede dividir por cero.';
+            return;
+          }
+          res = (a / b).toFixed(2);
+        }
+        $('#res-op').textContent = `Resultado: ${res}`;
+        tickDone();
+      });
+    });
+
+    // ===== Lengua: Sílabas (regla simplificada) =====
+    function silabearSimple(p) {
+      if (!p) return '';
+      const vocales = /[aeiouáéíóúü]/i;
+      const diptongos = /(ai|au|ei|eu|oi|ou|ia|ie|io|ua|ue|uo)/i;
+      let out = [];
+      let actual = '';
+      let i = 0;
+      while (i < p.length) {
+        actual += p[i];
+        const c = p[i];
+        const next = p[i + 1] || '';
+        const nextTwo = p[i + 2] || '';
+        if (vocales.test(c) && next && vocales.test(next) && diptongos.test(c + next)) {
+          actual += next;
+          i += 2;
+          if (nextTwo && !vocales.test(nextTwo)) {
+            out.push(actual);
+            actual = '';
+          }
+        } else if (vocales.test(c) && next && !vocales.test(next)) {
+          i++;
+        } else if (!vocales.test(c) && next && vocales.test(next)) {
+          out.push(actual);
+          actual = '';
+          i++;
+        } else if (!vocales.test(c) && next && !vocales.test(next)) {
+          out.push(actual);
+          actual = '';
+          i++;
+        } else {
+          i++;
+        }
+      }
+      if (actual) out.push(actual);
+      return out.join(' - ');
+    }
+    $('#btnSil').addEventListener('click', () => {
+      const p = ($('#palabra').value || '').trim();
+      if (!p) {
+        $('#outSil').textContent = 'Escribe una palabra.';
+        return;
+      }
+      $('#outSil').textContent = silabearSimple(p);
+      tickDone();
+    });
+
+    // ===== Lengua: Plural =====
+    function plural(s) {
+      if (!s) return '';
+      s = s.toLowerCase();
+      if (/[aeiouáéíóú]$/i.test(s)) return s + 's';
+      if (/z$/i.test(s)) return s.replace(/z$/i, 'ces');
+      if (/[ns]$/i.test(s)) return s + 'es';
+      return s + 'es';
+    }
+    $('#btnPlural').addEventListener('click', () => {
+      const s = ($('#singular').value || '').trim();
+      if (!s) {
+        $('#outPlural').textContent = 'Escribe una palabra.';
+        return;
+      }
+      $('#outPlural').textContent = `Plural: ${plural(s)}`;
+      tickDone();
+    });
+
+    // ===== Ciencias: Flashcards =====
+    $$('#ciencias .flash .card').forEach(card => {
+      card.addEventListener('click', () => toggleCard(card));
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleCard(card);
+        }
+      });
+    });
+    function toggleCard(el) {
+      const front = el.getAttribute('data-front');
+      const back = el.getAttribute('data-back');
+      const showingFront = el.textContent.trim() === front;
+      el.textContent = showingFront ? back : front;
+      el.setAttribute('aria-pressed', String(!showingFront));
+      el.setAttribute('aria-label', showingFront ? `Tarjeta: ${back}` : `Tarjeta: ${front}`);
+      if (!showingFront) tickDone();
+    }
+
+    // ===== Quiz =====
+    const QUESTIONS = [
+      { q: '¿Cuánto es 6 × 4?', opts: ['20', '24', '26', '28'], a: 1 },
+      { q: '¿Cuál es el plural de "lápiz"?', opts: ['lápizes', 'lápices', 'lápiceses', 'lapizs'], a: 1 },
+      { q: '¿Qué estado de la materia tiene forma fija?', opts: ['Líquido', 'Sólido', 'Gas', 'Plasma'], a: 1 },
+      { q: 'Selecciona la vocal:', opts: ['b', 'r', 'a', 't'], a: 2 },
+      { q: 'Si 10 ÷ 2 = ?', opts: ['4', '5', '6', '2'], a: 1 },
+    ];
+    function initQuiz(reset) {
+      const host = $('#quiz');
+      host.innerHTML = '';
+      QUESTIONS.forEach((it, idx) => {
+        const c = document.createElement('div');
+        c.className = 'card';
+        c.innerHTML = `<p class="quiz-q"><strong>${idx + 1}. </strong>${it.q}</p>`;
+        const box = document.createElement('div');
+        box.className = 'quiz-options';
+        it.opts.forEach((opt, i) => {
+          const b = document.createElement('button');
+          b.className = 'btn';
+          b.type = 'button';
+          b.textContent = opt;
+          b.addEventListener('click', () => {
+            $$('.quiz-options button', c).forEach(btn => btn.disabled = true);
+            if (i === it.a) {
+              $('#quizFeed').textContent = '¡Correcto! +1 ⭐';
+              b.style.background = 'var(--brand-2)';
+              state.score += 1;
+              save();
+              updateProgress();
+            } else {
+              $('#quizFeed').textContent = 'Sigue intentando…';
+              b.style.background = 'var(--danger)';
+            }
+          });
+          box.appendChild(b);
+        });
+        c.appendChild(box);
+        host.appendChild(c);
+      });
+      if (!reset) tickDone();
+    }
+
+    // ===== Memoria =====
+    const EMOJIS = ['🐶', '🐱', '🐭', '🦊', '🐼', '🐵', '🦁', '🐸'];
+    let openTiles = [], matched = 0, isLocked = false;
+    function initMemory(reset) {
+      const board = $('#board');
+      board.innerHTML = '';
+      const items = [...EMOJIS, ...EMOJIS].sort(() => Math.random() - 0.5);
+      matched = 0;
+      openTiles = [];
+      isLocked = false;
+      items.forEach((icon, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'tile';
+        btn.setAttribute('aria-label', 'Carta de memoria');
+        btn.dataset.icon = icon;
+        btn.dataset.index = i;
+        btn.addEventListener('click', () => open(btn));
+        board.appendChild(btn);
+      });
+      $('#memFeed').textContent = 'Encuentra todas las parejas';
+      if (!reset) tickDone();
+    }
+    function open(btn) {
+      if (isLocked || btn.classList.contains('matched') || btn.classList.contains('open')) return;
+      btn.classList.add('open');
+      btn.textContent = btn.dataset.icon;
+      openTiles.push(btn);
+      if (openTiles.length === 2) {
+        isLocked = true;
+        const [a, b] = openTiles;
+        if (a.dataset.icon === b.dataset.icon) {
+          a.classList.add('matched');
+          b.classList.add('matched');
+          matched += 1;
+          state.score += 1;
+          save();
+          updateProgress();
+          $('#memFeed').textContent = `¡Pareja encontrada! Parejas: ${matched}/8`;
+          if (matched === 8) {
+            $('#memFeed').textContent = '¡Ganaste el juego de memoria! 🎉';
+            state.done += 1;
+            save();
+            updateProgress();
+          }
+          openTiles = [];
+          isLocked = false;
+        } else {
+          $('#memFeed').textContent = 'No es una pareja, intenta de nuevo.';
+          setTimeout(() => {
+            a.classList.remove('open');
+            b.classList.remove('open');
+            a.textContent = '';
+            b.textContent = '';
+            openTiles = [];
+            isLocked = false;
+            $('#memFeed').textContent = 'Encuentra todas las parejas';
+          }, 800);
+        }
+      }
+    }
+    $('#resetMem').addEventListener('click', () => initMemory(true));
+
+    // ===== Comunes =====
+    function tickDone() {
+      if (state.done < 5) {
+        state.done += 1;
+        save();
+        updateProgress();
+      }
+    }
+
+    // Inicialización
+    updateProgress();
+    initQuiz();
+    initMemory();
+  </script>
+</body>
+</html>
